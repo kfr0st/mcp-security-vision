@@ -117,6 +117,9 @@ y en dejar el repositorio listo para publicar.
 
 ### Corregido
 
+- `capture_snapshot` fallaba en Python 3.10 al devolver la imagen: FastMCP trataba el
+  retorno `Any` como salida estructurada y no podía serializarla. La herramienta se
+  registra ahora como no estructurada.
 - El import `from mcp.server.fastmcp import Image` no existe en SDK 2.x (el SDK se renombró
   a `MCPServer`); se añadió un *shim* compatible con ambas versiones.
 - Condiciones de carrera al recargar el registro facial (ahora con `RLock`).
