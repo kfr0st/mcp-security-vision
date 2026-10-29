@@ -1,0 +1,26 @@
+{
+  "_comment": "Zonas restringidas de ejemplo. Coordenadas normalizadas 0..1 (x=ancho, y=alto). (0,0) es arriba-izquierda. Se importan en SQLite solo si no existen.",
+  "zones": [
+    {
+      "camera_id": "cam1",
+      "name": "Entrada (ejemplo)",
+      "points": [[0.30, 0.28], [0.70, 0.28], [0.70, 0.95], [0.30, 0.95]],
+      "labels": ["person"],
+      "enabled": true
+    },
+    {
+      "camera_id": "entrada",
+      "name": "Puerta principal",
+      "points": [[0.35, 0.30], [0.65, 0.30], [0.65, 0.95], [0.35, 0.95]],
+      "labels": ["person"],
+      "enabled": true
+    },
+    {
+      "camera_id": "patio",
+      "name": "Puerta trasera",
+      "points": [[0.05, 0.40], [0.35, 0.40], [0.35, 0.95], [0.05, 0.95]],
+      "labels": ["person", "car"],
+      "enabled": true
+    }
+  ]
+}

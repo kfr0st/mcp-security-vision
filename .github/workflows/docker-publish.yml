@@ -1,0 +1,121 @@
+name: Docker Hub
+
+# Publica la imagen en Docker Hub.
+# Secrets necesarios en el repositorio:
+#   DOCKERHUB_USERNAME  -> tu usuario de Docker Hub
+#   DOCKERHUB_TOKEN     -> token de acceso (Account Settings > Security > New Access Token)
+# Opcionales:
+#   DOCKERHUB_REPO      -> nombre del repo (por defecto: mcp-security-vision)
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+    branches: [main, master]
+    paths:
+      - "Dockerfile"
+      - "docker-compose.yml"
+      - "requirements.txt"
+      - "pyproject.toml"
+      - "server.py"
+      - "mcp_security_vision/**"
+      - ".github/workflows/docker-publish.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Tests antes de publicar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Instalar dependencias de test
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+      - name: Ejecutar tests (sin integración)
+        run: pytest -q -m "not integration"
+
+  build-and-push:
+    name: Build multi-arch y push
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Comprobar credenciales de Docker Hub
+        id: creds
+        run: |
+          if [ -n "${{ secrets.DOCKERHUB_USERNAME }}" ] && [ -n "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Faltan los secrets DOCKERHUB_USERNAME/DOCKERHUB_TOKEN: solo se hará build, sin push."
+          fi
+
+      - name: Calcular nombre de la imagen
+        id: image
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_REPO: ${{ secrets.DOCKERHUB_REPO }}
+        run: |
+          owner="${DOCKERHUB_USERNAME:-${{ github.repository_owner }}}"
+          repo="${DOCKERHUB_REPO:-mcp-security-vision}"
+          echo "name=$(echo "${owner}/${repo}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Login en Docker Hub
+        if: steps.creds.outputs.available == 'true'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Metadatos de la imagen (tags y labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.image.outputs.name }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=ref,event=branch
+            type=sha,prefix=sha-,format=short
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build y Push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: ${{ steps.creds.outputs.available == 'true' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            PRELOAD_MODELS=false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Actualizar descripción en Docker Hub
+        if: steps.creds.outputs.available == 'true' && github.event_name != 'pull_request'
+        uses: peter-evans/dockerhub-description@v4
+        continue-on-error: true
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ steps.image.outputs.name }}
+          short-description: "Servidor MCP de videovigilancia inteligente: YOLOv8 + rostros + zonas de intrusión + SQLite"
+          readme-filepath: ./README.md

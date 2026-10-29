@@ -1,0 +1,46 @@
+# Entorno y secretos
+.env
+.env.*
+!.env.example
+
+# Datos privados: fotos de personas, capturas y base de datos
+known_faces/*
+!known_faces/.gitkeep
+!known_faces/README.md
+snapshots/*
+!snapshots/.gitkeep
+data/*
+!data/.gitkeep
+*.db
+*.db-wal
+*.db-shm
+
+# Modelos pesados
+*.pt
+*.onnx
+*.engine
+yolov8*.pt
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+venv/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+report.xml
+docs/demo_annotated.jpg.tmp
+
+# Editores / sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

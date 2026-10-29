@@ -1,0 +1,54 @@
+name: ✨ Propuesta de mejora
+description: Sugiere una funcionalidad o una mejora
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Antes de proponer, revisa el roadmap del README y los issues existentes.
+  - type: textarea
+    id: problem
+    attributes:
+      label: ¿Qué problema resuelve?
+      description: Describe el caso de uso, no solo la solución.
+      placeholder: "Como usuario con 4 cámaras, quiero ..."
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Propuesta
+      description: ¿Cómo imaginas la solución? ¿Afecta a herramientas MCP, configuración o base de datos?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas consideradas
+    validations:
+      required: false
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options:
+        - Detección / modelos
+        - Reconocimiento facial
+        - Zonas e intrusiones
+        - Base de datos / historial
+        - Notificaciones
+        - Docker / despliegue
+        - Documentación
+        - Otra
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Comprobaciones
+      options:
+        - label: He buscado propuestas duplicadas.
+          required: true
+        - label: Esta propuesta no es un reporte de seguridad.
+          required: true

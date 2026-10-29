@@ -1,0 +1,49 @@
+# Levanta el servidor MCP con transporte HTTP (http://localhost:8000/mcp).
+#   1) cp .env.example .env  y configura tus cámaras
+#   2) docker compose up -d --build
+#   3) docker compose logs -f
+#
+# SEGURIDAD: el puerto se publica solo en 127.0.0.1. El transporte MCP no
+# incluye autenticación; si necesitas acceso remoto, ponlo detrás de un proxy
+# con TLS y autenticación (o añade tu propia capa de auth).
+services:
+  security-vision:
+    build:
+      context: .
+      args:
+        # true = incluir yolov8n.pt en la imagen (despliegues sin Internet)
+        PRELOAD_MODELS: "false"
+    image: ${DOCKERHUB_USER:-kfr0st}/mcp-security-vision:latest
+    container_name: mcp-security-vision
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MCP_TRANSPORT: streamable-http
+      MCP_HOST: 0.0.0.0
+      MCP_PORT: "8000"
+    ports:
+      # Solo loopback: evita exponer las cámaras y el historial a la LAN.
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./data:/app/data               # SQLite (historial permanente)
+      - ./snapshots:/app/snapshots     # evidencias JPEG
+      - ./known_faces:/app/known_faces # rostros registrados
+      - ./config:/app/config           # zonas de ejemplo / semillas
+      - yolo-models:/app/models        # pesos de YOLO (persisten entre reinicios)
+    # --- Cámara USB / capturadora analógica (RCA-BNC a USB) ---
+    # devices:
+    #   - /dev/video0:/dev/video0
+    # group_add:
+    #   - video
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1', 8000), 3).close()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  yolo-models:

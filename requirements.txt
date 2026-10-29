@@ -1,0 +1,15 @@
+# Dependencias de ejecución completas (visión real).
+# Instalación:  pip install -r requirements.txt
+#
+# Nota Windows/macOS: `face-recognition` compila dlib.
+#   - Windows: instala "Visual Studio Build Tools" (C++) y CMake.
+#   - Debian/Ubuntu: sudo apt install build-essential cmake libopenblas-dev liblapack-dev
+# Si solo quieres probar el servidor sin cámara ni IA: usa VISION_FAKE_MODELS=1
+# con requirements-dev.txt (mucho más ligero).
+
+mcp>=1.2,<3
+python-dotenv>=1.0.0
+numpy>=1.24.0
+opencv-python>=4.8.0
+ultralytics>=8.1.0
+face-recognition>=1.3.0

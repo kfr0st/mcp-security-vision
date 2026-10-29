@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🔒 Reportar una vulnerabilidad
+    url: https://github.com/kfr0st/mcp-security-vision/security/advisories/new
+    about: Usa el reporte privado; no abras un issue público para problemas de seguridad.
+  - name: 🩺 Problemas frecuentes
+    url: https://github.com/kfr0st/mcp-security-vision/blob/main/docs/TROUBLESHOOTING.md
+    about: Revisa la guía verificada antes de abrir un issue.

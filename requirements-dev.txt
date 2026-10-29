@@ -1,0 +1,11 @@
+# Dependencias para desarrollo, CI y modo demo (sin torch ni dlib).
+# Instalación:  pip install -r requirements-dev.txt
+
+mcp>=1.2,<3
+python-dotenv>=1.0.0
+numpy>=1.24.0
+opencv-python-headless>=4.8.0
+
+pytest>=8.0
+pytest-cov>=5.0
+ruff>=0.6

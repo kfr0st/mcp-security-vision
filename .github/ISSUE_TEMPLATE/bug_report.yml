@@ -1,0 +1,91 @@
+name: 🐛 Bug
+description: Reporta un fallo reproducible
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por reportar. Antes de continuar, revisa
+        [docs/TROUBLESHOOTING.md](https://github.com/kfr0st/mcp-security-vision/blob/main/docs/TROUBLESHOOTING.md).
+
+        ⚠️ **No incluyas credenciales, tokens, IPs privadas ni fotos de personas.**
+        Para vulnerabilidades usa el reporte privado descrito en
+        [SECURITY.md](https://github.com/kfr0st/mcp-security-vision/blob/main/SECURITY.md).
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: ¿Qué ocurre?
+      description: Describe el fallo y su impacto.
+      placeholder: "Ej.: al añadir una zona con el mismo nombre en mayúsculas se duplica..."
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pasos para reproducirlo
+      placeholder: |
+        1. Configurar CAMERA_SOURCE=synthetic
+        2. Ejecutar python server.py
+        3. Llamar a la herramienta ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Resultado esperado
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs o traza
+      description: Pega el error completo con las credenciales enmascaradas.
+      render: shell
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: Versión del proyecto
+      placeholder: "2.1.0"
+    validations:
+      required: true
+  - type: input
+    id: mcp-version
+    attributes:
+      label: Versión del SDK MCP
+      description: Salida de `pip show mcp`.
+      placeholder: "1.30.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: Despliegue
+      options:
+        - stdio (Claude Desktop / Cursor)
+        - streamable-http local
+        - Docker
+        - Detrás de proxy
+        - Otro
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Sistema operativo y Python
+      placeholder: "Ubuntu 24.04 · Python 3.12"
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Comprobaciones
+      options:
+        - label: He buscado issues duplicados.
+          required: true
+        - label: He revisado docs/TROUBLESHOOTING.md.
+          required: true
+        - label: No he incluido secretos ni datos personales.
+          required: true
