@@ -131,7 +131,10 @@ def get_live_status(camera_id: str = "") -> str:
         return _error(exc)
 
 
-@app.tool()
+# structured_output=False: en Python 3.10 ``typing.Any`` no es una clase y FastMCP
+# lo interpreta como salida estructurada, envolviendo la imagen en ``{"result": ...}``
+# y fallando al serializarla. La herramienta devuelve Image o texto de error.
+@app.tool(structured_output=False)
 def capture_snapshot(camera_id: str = "", annotate: bool = False, save: bool = False) -> Any:
     """Toma una foto en vivo y la devuelve como imagen al agente.
 
